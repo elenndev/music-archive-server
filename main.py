@@ -11,6 +11,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from pymongo import MongoClient
+from posts import all_posts, new_post
 
 load_dotenv()
 
@@ -29,10 +30,6 @@ origins = [
     "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
 ]
 
-DB_URL: str = os.environ.get('MONGODB_URL') #VER DEPOIS SE FUNCIONA SEM O STR
-client = MongoClient(DB_URL)
-db = client["posts"]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -41,17 +38,11 @@ app.add_middleware(
     allow_methods=["*"]
 )
 
-def convert_to_dict(doc):
-    doc["_id"] = str(doc["_id"])  # Converte ObjectId para string pra poder iterar e salvar em array
-    return doc
 
 @app.get("/all-posts")
 def get_allPosts(sort: float):
-    collection = db["posts"]
-    all_posts = []
-    cursor = collection.find({})
-    for doc in cursor:
-        all_posts.append(convert_to_dict(doc))
+    all_posts(sort)
 
-    return all_posts
-
+@app.post("/create-post")
+def create_post(post: Post):
+    new_post(post)
