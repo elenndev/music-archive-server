@@ -1,26 +1,10 @@
-from typing import Union
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import HTTPBearer, OAuth2PasswordBearer
-from pydantic import BaseModel
 from dotenv import load_dotenv
-import os
-import bcrypt
-from jose import jwt
-from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone
-from pymongo import MongoClient
-from posts import all_posts, new_post, delete_post
+from posts import all_posts, new_post, delete_post, update_post, Post
 
 load_dotenv()
-
-class Post(BaseModel):
-    title: str
-    cover: str
-    cover_description: str
-    content: str
-    created_at: datetime
 
 app = FastAPI()
 
@@ -52,3 +36,7 @@ def create_post(post: Post):
 def delete_postById(get_id: str):
     return delete_post(get_id)
     
+@app.put("/update-post")
+def update_postById(post: Post, get_id: str):
+    data = jsonable_encoder(post)
+    return update_post(data, get_id)
