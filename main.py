@@ -11,13 +11,13 @@ from jose import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from pymongo import MongoClient
-from posts import all_posts, new_post
+from posts import all_posts, new_post, delete_post
 
 load_dotenv()
 
 class Post(BaseModel):
-    id: str
     title: str
+    cover: str
     cover_description: str
     content: str
     created_at: datetime
@@ -41,8 +41,14 @@ app.add_middleware(
 
 @app.get("/all-posts")
 def get_allPosts(sort: float):
-    all_posts(sort)
+    return all_posts(sort)
 
 @app.post("/create-post")
 def create_post(post: Post):
-    new_post(post)
+    data = jsonable_encoder(post)
+    return new_post(data)
+
+@app.delete("/delete-post")
+def delete_postById(get_id: str):
+    return delete_post(get_id)
+    
