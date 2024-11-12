@@ -39,6 +39,8 @@ def new_post(data: Post):
     except PyMongoError as e:
         print(f"Erro ao criar novo post: {e}")
         return False
+    finally: 
+        client.close()
 
 def delete_post(get_id):
     try:
@@ -61,4 +63,7 @@ def update_post(data: Post, get_id):
     except PyMongoError as e:
         print(f"Erro ao atualizar post: {e}")
 
-
+def get_post(get_id):
+    id = ObjectId(get_id)
+    post = collection.find_one({'_id': id})
+    return post
