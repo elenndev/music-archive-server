@@ -16,16 +16,20 @@ class Post(BaseModel):
     created_at: datetime
 
 DB_URL = os.environ.get('MONGODB_URL')
-client = MongoClient(DB_URL)
-db = client["posts"]
-collection = db["posts"]
 
 def convert_to_dict(doc):
     doc["_id"] = str(doc["_id"])  
     return doc
 
+def connect_db():
+    client = MongoClient(DB_URL)
+    db = client["posts"]
+    collection = db["posts"]
+    return client, db, collection
+
 
 def all_posts(sort: float):
+    client, db, collection = connect_db()
     all_posts = []
     cursor = collection.find({})
     for doc in cursor:
@@ -33,6 +37,7 @@ def all_posts(sort: float):
     return all_posts
 
 def new_post(data: Post):
+    client, db, collection = connect_db()
     try:
         result = collection.insert_one(data)
         return {"id": str(result.inserted_id)}
@@ -43,6 +48,7 @@ def new_post(data: Post):
         client.close()
 
 def delete_post(get_id):
+    client, db, collection = connect_db()
     try:
         id = ObjectId(get_id)
         result = collection.delete_one({'_id': id})
@@ -51,8 +57,11 @@ def delete_post(get_id):
     except PyMongoError as e:
         print(f"Erro ao deletar post: {e}")
         return False
+    finally:
+        client.close()
     
 def update_post(data: Post, get_id):
+    client, db, collection = connect_db()
     try:
         id = ObjectId(get_id)
         result = collection.update_one(
@@ -62,8 +71,11 @@ def update_post(data: Post, get_id):
         return response
     except PyMongoError as e:
         print(f"Erro ao atualizar post: {e}")
+    finally:
+        client.close()
 
 def get_post(get_id):
+    client, db, collection = connect_db()
     id = ObjectId(get_id)
     post = collection.find_one({'_id': id})
     return post
