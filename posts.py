@@ -11,6 +11,7 @@ load_dotenv()
 
 class Post(BaseModel):
     title: str
+    cover: str
     cover_description: str
     content: str
     created_at: datetime
@@ -28,10 +29,10 @@ def connect_db():
     return client, db, collection
 
 
-def all_posts(sort: float):
+def all_posts(sort: int):
     client, db, collection = connect_db()
     all_posts = []
-    cursor = collection.find({})
+    cursor = collection.find({}).sort("created_at", sort)
     for doc in cursor:
         all_posts.append(convert_to_dict(doc))
     return all_posts
