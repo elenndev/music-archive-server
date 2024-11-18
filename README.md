@@ -1,5 +1,5 @@
 # Blog Backend API
-API desenvolvida em python com o fastapi e acessando a database servir como backend para o projeto [Music Archive](https://music-archive-blog.vercel.app), gerenciando os post e demais informações sobre o conteúdo do site.
+API desenvolvida em python com o fastapi para servir como backend para o projeto [Music Archive](https://music-archive-blog.vercel.app), gerenciando os post e demais informações sobre o conteúdo do site.
 - Leitura das publicações salvas no banco de dado.
 - Checar Autenticação para gerenciar a permissão de funcionalidades do administrador do blog:
     - Criação, edição e exclusão de postagens.
