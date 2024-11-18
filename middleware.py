@@ -10,6 +10,5 @@ AUTH_API_URL = os.environ.get('AUTH_API_URL')
 def validate_auth(token):
     headers = {
         "Authorization": f"Bearer {token}"}
-    response = requests.get(f"{AUTH_API_URL
-    }/check-token", headers = headers)
+    response = requests.get(f"{AUTH_API_URL}/check-token", headers = headers)
     return response
