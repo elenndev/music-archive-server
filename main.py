@@ -5,6 +5,7 @@ from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from dotenv import load_dotenv
 from posts import all_posts, new_post, delete_post, update_post, Post, get_post
 from blogSaves import get_blogSaves, set_blogSaves, BlogSave
+from drafts import get_drafts, update_draft, delete_draft, create_draft
 from middleware import validate_auth
 import requests
 import os
@@ -15,6 +16,7 @@ app = FastAPI()
 
 origins = [
     "https://music-archive-blog.vercel.app",
+    "http://localhost:5173",
     "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
 ]
 
@@ -36,7 +38,10 @@ def get_postById(get_id: str):
     return get_post(get_id)  
 
 @app.post("/create-post")
-def create_post(post: Post):
+def create_post(post: Post, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        return False
     data = jsonable_encoder(post)
     print(data)
     return new_post(data)
@@ -44,14 +49,16 @@ def create_post(post: Post):
 @app.delete("/delete-post")
 def delete_postById(get_id: str, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
     check = validate_auth(token)
-    print("olha chegou aquii")
     if not check:
         print("Token invalido")
         return False
     return delete_post(get_id)
     
 @app.put("/update-post")
-def update_postById(post: Post, get_id: str):
+def update_postById(post: Post, get_id: str, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        return False
     data = jsonable_encoder(post)
     return update_post(data, get_id)
 
@@ -63,6 +70,41 @@ def get_fastBlogInfos(info_name):
     return info
 
 @app.put("/set-fast-infos")
-def set_fastBlogInfos(get_info: BlogSave):
+def set_fastBlogInfos(get_info: BlogSave, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        return False
     info = jsonable_encoder(get_info)
     return set_blogSaves(info)
+
+@app.get("/get-drafts")
+def get_postDrafts(sort: int, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        print("falha ao checar token")
+        return False
+    return get_drafts(sort)
+
+@app.post("/create-draft")
+def create_postDraft(post: Post, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        return False
+    data = jsonable_encoder(post)
+    return create_draft(data)
+
+@app.put("/update-draft")
+def update_postDraft(post: Post,get_id: str, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        return False
+    data = jsonable_encoder(post)
+    return update_draft(data, get_id)
+
+@app.delete("/delete-draft")
+def delete_draftById(get_id: str, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    check = validate_auth(token)
+    if not check:
+        print("Token invalido")
+        return False
+    return delete_draft(get_id)
