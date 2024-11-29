@@ -77,6 +77,10 @@ def update_post(data: Post, get_id):
 
 def get_post(get_id):
     client, db, collection = connect_db()
-    id = ObjectId(get_id)
-    post = collection.find_one({'_id': id})
-    return post
+    try:
+        id = ObjectId(get_id)
+    except Exception as e:
+    # Tratar erro de conversão
+        return {"error": f"Invalid ObjectId: {e}"}
+    doc = collection.find_one({'_id': id})
+    return convert_to_dict(doc)
