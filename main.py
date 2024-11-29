@@ -15,7 +15,6 @@ load_dotenv()
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173",
     "https://music-archive-blog.vercel.app",
     "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
 ]
