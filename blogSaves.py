@@ -36,6 +36,7 @@ def set_blogSaves(info: BlogSave):
     try:
         result = collection.update_one({'info_name': info['info_name']},
         {'$set':{'text_value': info['text_value']}})
+        print(info['info_name'], info['text_value'])
         response = True if result.modified_count > 0 else False
         return response
     except PyMongoError as e:
