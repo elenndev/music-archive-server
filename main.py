@@ -27,7 +27,7 @@ app.add_middleware(
     allow_methods=["*"]
 )
 
-@app.get("/)
+@app.get("/")
 def start():
     return "hello!"
 
