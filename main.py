@@ -14,14 +14,13 @@ load_dotenv()
 
 app = FastAPI()
 
-origins = [
-    "https://music-archive-blog.vercel.app",
-    "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+    "https://music-archive-blog.vercel.app",
+    "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
+],
     allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"]
