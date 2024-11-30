@@ -27,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"]
 )
 
+@app.get("/)
+def start():
+    return "hello!"
 
 @app.get("/all-posts")
 def get_allPosts(sort: int):
