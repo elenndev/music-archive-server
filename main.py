@@ -1,14 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException, Response, Request
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from dotenv import load_dotenv
 from posts import all_posts, new_post, delete_post, update_post, Post, get_post
 from blogSaves import get_blogSaves, set_blogSaves, BlogSave
 from drafts import get_drafts, update_draft, delete_draft, create_draft
-from middleware import validate_auth
-import requests
-import os
 
 load_dotenv()
 
@@ -30,6 +26,36 @@ app.add_middleware(
 @app.get("/")
 def start():
     return "hello!"
+
+@app.get("/sitemap", response_class = Response)
+def sitemap():
+    sitemap_xml = '''
+    <?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://music-archive-blog.vercel.app</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://music-archive-blog.vercel.app/todas-publicacoes</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://music-archive-blog.vercel.app/ler/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://music-archive-blog.vercel.app/sobre-mim</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>
+
+'''
+    return Response(content=sitemap_xml, media_type="application/xml")
 
 @app.get("/all-posts")
 def get_allPosts(sort: int):
