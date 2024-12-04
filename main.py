@@ -18,6 +18,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+    "https://music-archive-elenndevs-projects.vercel.app",
     "https://music-archive-blog.vercel.app",
     "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
 ],
