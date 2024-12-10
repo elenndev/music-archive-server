@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
+from fastapi import HTTPException, status
 from dotenv import load_dotenv
 from datetime import datetime
 from pydantic import BaseModel
@@ -30,12 +31,13 @@ def get_drafts(sort: int):
 
 def create_draft(data: Post):
     client, db, collection = connect_db()
+
     try:
         result = collection.insert_one(data)
         return {"id": str(result.inserted_id)}
     except PyMongoError as e:
-        print(f"Erro ao criar o rascunho")
-        return False
+        print(f"Erro ao criar o rascunho {e}")
+        raise
     finally:
         client.close()
 
@@ -50,7 +52,8 @@ def update_draft(data: Post, get_id):
         response = True if result.modified_count > 0 else False
         return response
     except PyMongoError as e:
-        print(f"Erro atualziar rascunho: {e}")
+        print(f"Erro atualizar rascunho: {e}")
+        raise
     finally:
         client.close()
 
@@ -63,6 +66,6 @@ def delete_draft(get_id):
         return response
     except PyMongoError as e:
         print(f"Erro ao deletar rascunho: {e}")
-        return False
+        raise
     finally:
         client.close()

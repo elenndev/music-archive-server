@@ -41,5 +41,6 @@ def set_blogSaves(info: BlogSave):
         return response
     except PyMongoError as e:
         print(f"Erro ao atualizar informações do blog: {e}")
+        raise
     finally:
         client.close()

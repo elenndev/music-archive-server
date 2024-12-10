@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
+from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
 from posts import all_posts, new_post, delete_post, update_post, Post, get_post
 from blogSaves import get_blogSaves, set_blogSaves, BlogSave
@@ -10,10 +11,15 @@ load_dotenv()
 
 app = FastAPI()
 
+class CustomException(HTTPException):
+    def __init__(self, status_code: int, detail: str):
+        super().__init__(status_code=status_code, detail=detail)
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+    "http://localhost:5173",
     "https://music-archive-elenndevs-projects.vercel.app",
     "https://music-archive-blog.vercel.app",
     "https://music-archive-6nd23x9fr-elenndevs-projects.vercel.app"
@@ -70,17 +76,32 @@ def get_postById(get_id: str):
 @app.post("/create-post")
 def create_post(post: Post):
     data = jsonable_encoder(post)
-    print(data)
-    return new_post(data)
+    try:
+        new_post(data)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Post criado com sucesso")
 
 @app.delete("/delete-post")
 def delete_postById(get_id: str):
-    return delete_post(get_id)
+    try:
+        delete_post(get_id)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Post deletado com sucesso")
+
     
 @app.put("/update-post")
 def update_postById(post: Post, get_id: str):
     data = jsonable_encoder(post)
-    return update_post(data, get_id)
+    try:
+        update_post(data, get_id)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Post editado com sucesso")
 
 @app.get("/fast-infos")
 def get_fastBlogInfos(info_name):
@@ -92,7 +113,13 @@ def get_fastBlogInfos(info_name):
 @app.put("/set-fast-infos")
 def set_fastBlogInfos(get_info: BlogSave):
     info = jsonable_encoder(get_info)
-    return set_blogSaves(info)
+    try:
+        set_blogSaves(info)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Informação atualizada com sucesso")
+
 
 @app.get("/get-drafts")
 def get_postDrafts(sort: int):
@@ -101,13 +128,30 @@ def get_postDrafts(sort: int):
 @app.post("/create-draft")
 def create_postDraft(post: Post):
     data = jsonable_encoder(post)
-    return create_draft(data)
+    try:
+        create_draft(data)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Rascunho criado com sucesso")
+
 
 @app.put("/update-draft")
 def update_postDraft(post: Post,get_id: str):
     data = jsonable_encoder(post)
-    return update_draft(data, get_id)
+    try: 
+        update_draft(data, get_id)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+
+    return Response(status_code = 201, content = "Rascunho editado com sucesso")
 
 @app.delete("/delete-draft")
 def delete_draftById(get_id: str):
-    return delete_draft(get_id)
+    try:
+        delete_draft(get_id)
+    except PyMongoError as e:
+        return Response(status_code = e.status_code, content = f"Erro com o banco de dados. | Error: {e.detail}")
+    
+    return Response(status_code = 201, content = "Rascunho deletado com sucesso")
+
